@@ -10,13 +10,10 @@ const GameBoard = () => {
     }
   }
 
+  //* Method to place marker
   const dropToken = (row, column, player) => {
     if (board[row][column].getValue() === 0) {
       board[row][column].addToken(player);
-    } else {
-      console.log("Yeah lil bro you can't do that");
-
-      return;
     }
   };
 
@@ -27,6 +24,7 @@ const GameBoard = () => {
     console.log(boardWithValues);
   };
 
+  //* Method to get the board with the values in the every cell
   const getBoard = () => {
     return board.map((row) => row.map((cell) => cell.getValue()));
   };
@@ -66,18 +64,20 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     {
       name: playerOneName,
       token: "1",
+      points: 0,
     },
     {
       name: playerTwoName,
       token: "2",
+      points: 0,
     },
   ];
 
   const board = GameBoard();
 
-  let activePlayer = Players[0];
+  let activePlayer = Players[0]; //* Starting player is Player ONE
 
-  let gameFinished = false;
+  let gameFinished = false; //* Variable to check the status of the game
 
   const switchActivePlayer = () => {
     if (activePlayer === Players[0]) {
@@ -89,6 +89,17 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
 
   const getActivePlayer = () => activePlayer;
 
+  //* Method to log player points
+  const getPlayerPoints = () => {
+    for (let i = 0; i < 2; i++) {
+      console.log(Players[i].name, Players[i].points);
+    }
+  };
+
+  const addPoints = (player) => {
+    player.points += 1;
+  };
+
   const printNewRoundConsole = () => {
     board.printBoardConsole();
     console.log(`${getActivePlayer().name} it's your turn`);
@@ -96,7 +107,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
 
   const restartGame = () => {
     console.log("The game has restarted!!, printing the new board");
-
+    addPoints(activePlayer);
     board.clearBoard();
     gameFinished = false;
     activePlayer = Players[0];
@@ -104,20 +115,28 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
   };
 
   const playRound = (row, column) => {
+    //* Check if the game as ended and exits the function
     if (gameFinished === true) {
       console.log(`The game finished, ${getActivePlayer().name} wins!`);
       return;
     }
+
     console.log(
       `${
         getActivePlayer().name
       } made his choice in postion row: ${row} and column: ${column}`
     );
-    board.dropToken(row, column, getActivePlayer().token);
+
+    if (board.getBoard()[row][column] !== 0) {
+      console.log("That cell is already taken, please try another one!");
+      return;
+    }
+    board.dropToken(row, column, getActivePlayer().token); //* Applies player's marker to selected cell
 
     const winningCondition = () => {
       let winState = false;
       const Cell = board.getBoard();
+
       for (let i = 0; i < 3; i++) {
         if (
           Cell[i][0] !== 0 &&
@@ -154,14 +173,17 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     };
 
     const winCheck = winningCondition();
+    //* Checks if the winning condition is met
     if (winCheck.getState() === true) {
       return (gameFinished = true);
     }
+
     switchActivePlayer();
     printNewRoundConsole();
   };
   printNewRoundConsole();
 
+  //* Method to restart the game in the global scope
   const checkGame = () => {
     if (gameFinished === true) {
       restartGame();
@@ -173,6 +195,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     getActivePlayer,
     restartGame,
     checkGame,
+    getPlayerPoints,
   };
 }
 
@@ -180,6 +203,7 @@ const gameControls = GameMechs();
 const round = gameControls.playRound;
 
 // first example match
+round(1, 2);
 round(1, 2);
 round(2, 1);
 round(1, 1);
@@ -196,5 +220,4 @@ round(2, 2);
 round(1, 0);
 
 gameControls.checkGame();
-
-round(1, 1); // if player make wrong choice dont let him skip the round
+gameControls.getPlayerPoints();
