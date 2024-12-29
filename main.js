@@ -134,7 +134,6 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     board.dropToken(row, column, getActivePlayer().token); //* Applies player's marker to selected cell
 
     const Cell = board.getBoard();
-
     displayLogicDOM();
 
     const winningCondition = () => {
@@ -154,7 +153,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
           Cell[0][i] === Cell[1][i] &&
           Cell[0][i] === Cell[2][i]
         ) {
-          console.log("Hai il pipo in verticale");
+          console.log(`${getActivePlayer().name}Hai il pipo in verticale`);
           winState = true;
           board.printBoardConsole();
         }
@@ -167,7 +166,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
           Cell[0][2] === Cell[1][1] &&
           Cell[0][2] === Cell[2][0])
       ) {
-        console.log("Hai il pipo in diagonale");
+        console.log(`${getActivePlayer().name}Hai il pipo in diagonale`);
         winState = true;
         board.printBoardConsole();
       }
@@ -191,10 +190,14 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
   const checkGame = () => {
     if (gameFinished === true) {
       restartGame();
+      const displayGameBoard = document.querySelector("#gameBoard");
+      // Clear the entire board
+      displayLogicDOM();
     }
   };
 
   const getCell = () => board.getBoard();
+  const getGameStatus = () => gameFinished;
   return {
     playRound,
     getActivePlayer,
@@ -202,58 +205,64 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     checkGame,
     getPlayerPoints,
     getCell,
+    getGameStatus,
   };
 }
 
 const gameControls = GameMechs();
+
 const round = gameControls.playRound;
 
 const displayLogicDOM = () => {
   const boardValues = gameControls.getCell();
+
   const displayGameBoard = document.querySelector("#gameBoard");
 
   displayGameBoard.innerHTML = "";
 
-  for (let i = 0; i < 3; i++) {
-    const displayRow = document.createElement("div");
-    displayRow.classList.add("row");
-    for (let j = 0; j < 3; j++) {
-      const displayCell = document.createElement("div");
+  const createBoardDOM = () => {
+    for (let i = 0; i < 3; i++) {
+      const displayRow = document.createElement("div");
+      displayRow.classList.add("row");
+      for (let j = 0; j < 3; j++) {
+        const displayCell = document.createElement("div");
 
-      const assignSymbols = () => {
-        if (boardValues[i][j] === "1") {
-          displayCell.textContent = "X";
-        } else if (boardValues[i][j] === "2") {
-          displayCell.textContent = "O";
-        } else {
-          displayCell.textContent = "";
-        }
-      };
-      assignSymbols();
+        displayCell.setAttribute("row", i);
+        displayCell.setAttribute("column", j);
 
-      displayCell.classList.add("cell");
-      displayRow.appendChild(displayCell);
+        const assignSymbols = () => {
+          if (boardValues[i][j] === "1") {
+            displayCell.textContent = "X";
+          } else if (boardValues[i][j] === "2") {
+            displayCell.textContent = "O";
+          } else {
+            displayCell.textContent = "";
+          }
+        };
+        assignSymbols();
+
+        displayCell.classList.add("cell");
+        displayRow.appendChild(displayCell);
+      }
+      displayGameBoard.appendChild(displayRow);
     }
-    displayGameBoard.appendChild(displayRow);
-  }
+  };
+  createBoardDOM();
+
+  const cell = document.querySelectorAll(".cell");
+  cell.forEach((item) => {
+    item.addEventListener("click", () => {
+      const row = item.getAttribute("row");
+      const column = item.getAttribute("column");
+
+      round(row, column);
+      if (gameControls.getGameStatus() === true) {
+        function delayedCheckGame() {
+          gameControls.checkGame();
+        }
+        setTimeout(delayedCheckGame, 3000);
+      }
+    });
+  });
 };
-
-// first example match
-round(1, 2);
-round(1, 2);
-round(2, 1);
-round(1, 1);
-round(2, 2);
-round(1, 0);
-
-gameControls.checkGame();
-
-// second example match
-round(1, 2);
-round(2, 1);
-round(1, 1);
-round(2, 2);
-round(1, 0);
-
-gameControls.checkGame();
-gameControls.getPlayerPoints();
+displayLogicDOM();
