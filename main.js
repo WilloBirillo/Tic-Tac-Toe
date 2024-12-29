@@ -133,9 +133,12 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     }
     board.dropToken(row, column, getActivePlayer().token); //* Applies player's marker to selected cell
 
+    const Cell = board.getBoard();
+
+    displayLogicDOM();
+
     const winningCondition = () => {
       let winState = false;
-      const Cell = board.getBoard();
 
       for (let i = 0; i < 3; i++) {
         if (
@@ -175,7 +178,8 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     const winCheck = winningCondition();
     //* Checks if the winning condition is met
     if (winCheck.getState() === true) {
-      return (gameFinished = true);
+      gameFinished = true;
+      return { gameFinished };
     }
 
     switchActivePlayer();
@@ -190,17 +194,49 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     }
   };
 
+  const getCell = () => board.getBoard();
   return {
     playRound,
     getActivePlayer,
     restartGame,
     checkGame,
     getPlayerPoints,
+    getCell,
   };
 }
 
 const gameControls = GameMechs();
 const round = gameControls.playRound;
+
+const displayLogicDOM = () => {
+  const boardValues = gameControls.getCell();
+  const displayGameBoard = document.querySelector("#gameBoard");
+
+  displayGameBoard.innerHTML = "";
+
+  for (let i = 0; i < 3; i++) {
+    const displayRow = document.createElement("div");
+    displayRow.classList.add("row");
+    for (let j = 0; j < 3; j++) {
+      const displayCell = document.createElement("div");
+
+      const assignSymbols = () => {
+        if (boardValues[i][j] === "1") {
+          displayCell.textContent = "X";
+        } else if (boardValues[i][j] === "2") {
+          displayCell.textContent = "O";
+        } else {
+          displayCell.textContent = "";
+        }
+      };
+      assignSymbols();
+
+      displayCell.classList.add("cell");
+      displayRow.appendChild(displayCell);
+    }
+    displayGameBoard.appendChild(displayRow);
+  }
+};
 
 // first example match
 round(1, 2);
