@@ -107,7 +107,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
 
   const restartGame = () => {
     console.log("The game has restarted!!, printing the new board");
-    addPoints(activePlayer);
+    displayLogicDOM();
     board.clearBoard();
     gameFinished = false;
     activePlayer = Players[0];
@@ -189,8 +189,9 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
   //* Method to restart the game in the global scope
   const checkGame = () => {
     if (gameFinished === true) {
+      addPoints(activePlayer);
+
       restartGame();
-      const displayGameBoard = document.querySelector("#gameBoard");
       // Clear the entire board
       displayLogicDOM();
     }
@@ -249,6 +250,11 @@ const displayLogicDOM = () => {
   };
   createBoardDOM();
 
+  const resetButton = document.querySelector("#reset");
+  resetButton.addEventListener("click", () => {
+    gameControls.restartGame();
+  });
+
   const cell = document.querySelectorAll(".cell");
   cell.forEach((item) => {
     item.addEventListener("click", () => {
@@ -257,10 +263,12 @@ const displayLogicDOM = () => {
 
       round(row, column);
       if (gameControls.getGameStatus() === true) {
+        resetButton.disabled = true;
         function delayedCheckGame() {
           gameControls.checkGame();
+          resetButton.disabled = false;
         }
-        setTimeout(delayedCheckGame, 3000);
+        setTimeout(delayedCheckGame, 1500);
       }
     });
   });
