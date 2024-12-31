@@ -192,7 +192,7 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
         displayLogicDOM().removeStaleMessage();
         displayLogicDOM();
       }
-      setTimeout(delayedRestart, 1500);
+      setTimeout(delayedRestart, 2000);
     }
 
     switchActivePlayer();
@@ -241,7 +241,7 @@ const displayLogicDOM = () => {
       const displayRow = document.createElement("div");
       displayRow.classList.add("row");
       for (let j = 0; j < 3; j++) {
-        const displayCell = document.createElement("div");
+        const displayCell = document.createElement("button");
 
         displayCell.setAttribute("row", i);
         displayCell.setAttribute("column", j);
@@ -279,6 +279,7 @@ const displayLogicDOM = () => {
       round(row, column);
       if (gameControls.getGameStatus() === true) {
         resetButton.disabled = true;
+        disableCells();
         function delayedCheckGame() {
           gameControls.checkGame();
           resetButton.disabled = false;
@@ -300,6 +301,20 @@ const displayLogicDOM = () => {
     const staleMessage = document.querySelector(".staleMessage");
     staleMessage.remove();
     resetButton.disabled = false;
+  };
+
+  const disableCells = () => {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.disabled = true;
+    });
+  };
+
+  const createPlayers = () => {
+    const playerOne = document.createElement("p");
+    const playerTwo = document.createElement("p");
+    playerOne.classList.add("player");
+    playerTwo.classList.add("player");
   };
   return { createStaleMessage, removeStaleMessage };
 };
