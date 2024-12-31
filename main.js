@@ -37,11 +37,24 @@ const GameBoard = () => {
     }
   };
 
+  //! usa un filtro poi usi una costante se il filtro esce che non c' niente o fai un check con un array o direttamente sul filtro setti quella variabile true
+  const checkFilledBoard = () => {
+    const boardValues = getBoard();
+    const filledBoard = boardValues.every((row) =>
+      row.every((cell) => cell !== 0)
+    );
+    if (filledBoard) {
+      console.log("stocazzo");
+    }
+    return filledBoard;
+  };
+
   return {
     dropToken,
     printBoardConsole,
     getBoard,
     clearBoard,
+    checkFilledBoard,
   };
 };
 
@@ -115,12 +128,6 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
   };
 
   const playRound = (row, column) => {
-    //* Check if the game as ended and exits the function
-    if (gameFinished === true) {
-      console.log(`The game finished, ${getActivePlayer().name} wins!`);
-      return;
-    }
-
     console.log(
       `${
         getActivePlayer().name
@@ -128,7 +135,6 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     );
 
     if (board.getBoard()[row][column] !== 0) {
-      console.log("That cell is already taken, please try another one!");
       return;
     }
     board.dropToken(row, column, getActivePlayer().token); //* Applies player's marker to selected cell
@@ -179,6 +185,14 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
     if (winCheck.getState() === true) {
       gameFinished = true;
       return { gameFinished };
+    } else if (board.checkFilledBoard() === true) {
+      displayLogicDOM().createStaleMessage();
+      function delayedRestart() {
+        restartGame();
+        displayLogicDOM().removeStaleMessage();
+        displayLogicDOM();
+      }
+      setTimeout(delayedRestart, 1500);
     }
 
     switchActivePlayer();
@@ -192,10 +206,10 @@ function GameMechs(playerOneName = "Player One", playerTwoName = "Player Two") {
       addPoints(activePlayer);
 
       restartGame();
-      // Clear the entire board
       displayLogicDOM();
     }
   };
+  board.checkFilledBoard();
 
   const getCell = () => board.getBoard();
   const getGameStatus = () => gameFinished;
@@ -218,6 +232,7 @@ const displayLogicDOM = () => {
   const boardValues = gameControls.getCell();
 
   const displayGameBoard = document.querySelector("#gameBoard");
+  const headerContainer = document.querySelector("#errorMessage");
 
   displayGameBoard.innerHTML = "";
 
@@ -272,5 +287,20 @@ const displayLogicDOM = () => {
       }
     });
   });
+
+  const createStaleMessage = () => {
+    const staleMessage = document.createElement("div");
+    staleMessage.textContent = "The game is Stuck! restarting...";
+    staleMessage.classList.add("staleMessage");
+    headerContainer.appendChild(staleMessage);
+    resetButton.disabled = true;
+  };
+
+  const removeStaleMessage = () => {
+    const staleMessage = document.querySelector(".staleMessage");
+    staleMessage.remove();
+    resetButton.disabled = false;
+  };
+  return { createStaleMessage, removeStaleMessage };
 };
 displayLogicDOM();

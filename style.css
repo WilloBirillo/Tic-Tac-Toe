@@ -93,6 +93,7 @@ main {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   border: solid 1px black;
+  margin: 20px;
 }
 
 div.row {
