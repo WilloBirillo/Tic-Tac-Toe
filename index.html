@@ -8,12 +8,28 @@
     <title>Tic Tac Toe</title>
   </head>
   <body>
-    <header><h1>TIC TAC TOE</h1></header>
     <main>
-      <div id="errorMessage"></div>
-      <div id="gameBoard"></div>
-      <button id="reset">RESET</button>
+      <h1>TIC TAC TOE</h1>
+      <div id="inputContainer">
+        <div>
+          <label for="PlayerOne">Player One</label>
+          <p>X</p>
+          <input class="input-1" type="text" name="player-1" id="PlayerOne" />
+        </div>
+        <div>
+          <label for="PlayerTwo">Player Two</label>
+          <p>O</p>
+          <input class="input-2" type="text" name="player-2" id="PlayerTwo" />
+        </div>
+        <div><button id="start">Start</button></div>
+      </div>
+      <div id="gameContainer" class="hidden">
+        <div id="player-wrapper"></div>
+        <div id="gameBoard"></div>
+        <button id="reset">RESET</button>
+      </div>
     </main>
     <footer><p>© Willy The Pooh</p></footer>
+    <dialog></dialog>
   </body>
 </html>
